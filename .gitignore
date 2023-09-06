@@ -1,0 +1,7 @@
+.venv
+.lprof
+.ipynb_checkpoints
+logs
+minio_storage/*
+.env
+__pycache__

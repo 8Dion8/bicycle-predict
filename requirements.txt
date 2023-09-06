@@ -1,0 +1,5 @@
+mlflow==2.6.0
+apache-airflow[azure]==2.7.0
+jupyter
+lightgbm
+psycopg2
