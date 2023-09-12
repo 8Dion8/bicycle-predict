@@ -3,3 +3,6 @@ apache-airflow[azure]==2.7.0
 jupyter
 lightgbm
 psycopg2
+bentoml[io-pandas]
+opentelemetry-api==1.15.0
+opentelemetry-sdk==1.15.0
