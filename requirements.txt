@@ -1,8 +1,8 @@
-mlflow==2.6.0
 apache-airflow[azure]==2.7.0
-jupyter
-lightgbm
-psycopg2
-bentoml[io-pandas]
+bentoml[io-pandas]==1.1.6
+jupyter==1.0.0
+lightgbm==4.1.0
+mlflow==2.6.0
 opentelemetry-api==1.15.0
 opentelemetry-sdk==1.15.0
+psycopg2==2.9.7

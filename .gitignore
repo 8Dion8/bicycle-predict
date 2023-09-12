@@ -3,5 +3,6 @@
 .ipynb_checkpoints
 logs
 minio_storage/*
-.env
 __pycache__
+train.ipynb
+bentoml/mlruns/*

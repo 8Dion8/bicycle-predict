@@ -2,7 +2,6 @@ FROM ghcr.io/mlflow/mlflow:latest
 
 WORKDIR /workdir
 
-# COPY bentoml/bentofile.yaml .
 COPY bentoml/service.py .
 
 RUN pip install boto3 \

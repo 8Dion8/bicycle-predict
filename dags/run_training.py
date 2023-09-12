@@ -13,6 +13,8 @@ MLFLOW_CONN_ID = "mlflow_default"
 
 
 def train_time_series_with_folds(model, df, horizon=24*7):
+
+    # Load and create if necessary MLflow experiment
     try:
         experiment_id = mlflow.create_experiment("bicycle")
     except:
@@ -43,11 +45,7 @@ def train_time_series_with_folds(model, df, horizon=24*7):
         )
 
 
-main_dag = DAG(
-    dag_id='main.dag',
-    start_date=datetime(2023, 9, 5),
-    schedule_interval=None
-)
+
 
 
 def train():
@@ -82,6 +80,12 @@ def train():
     model = LGBMRegressor()
     train_time_series_with_folds(model, df)
 
+
+main_dag = DAG(
+    dag_id='main.dag',
+    start_date=datetime(2023, 9, 5),
+    schedule_interval=None
+)
 
 t1 = PythonOperator(
     task_id="train_model",

@@ -71,10 +71,10 @@ x-airflow-common: &airflow-common
     # for other purpose (development, test and especially production usage) build/extend Airflow image.
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
 
-    MLFLOW_S3_ENDPOINT_URL: http://minio:9000
-    MLFLOW_TRACKING_URI: http://mlflow:5000
-    AWS_ACCESS_KEY_ID: rL6cri6U8RcVgGc9F94K
-    AWS_SECRET_ACCESS_KEY: q4ZoKJmO74pbgOeL6GUF3ivoI8C4OVmW8TgfD1Mp
+    MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
+    MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
@@ -327,10 +327,10 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
-      - MLFLOW_TRACKING_URI=http://mlflow:5000
-      - AWS_ACCESS_KEY_ID=rL6cri6U8RcVgGc9F94K
-      - AWS_SECRET_ACCESS_KEY=q4ZoKJmO74pbgOeL6GUF3ivoI8C4OVmW8TgfD1Mp
+      MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     command: mlflow server --default-artifact-root s3://modelbucket/ --backend-store-uri /workdir --host 0.0.0.0
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:5000/health"]
