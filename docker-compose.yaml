@@ -84,24 +84,25 @@ x-airflow-common: &airflow-common
   depends_on: &airflow-common-depends-on
     redis:
       condition: service_healthy
-    postgres:
-      condition: service_healthy
+    # postgres:
+    #   condition: service_healthy
 
 services:
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
-    volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow", "--port", "3608"]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-    restart: always
+  # postgres:
+  #   image: postgres:13
+  #   environment:
+  #     POSTGRES_USER: airflow
+  #     POSTGRES_PASSWORD: airflow
+  #     POSTGRES_DB: airflow
+  #   volumes:
+  #     - postgres-db-volume:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD", "pg_isready", "-U", "airflow", "--port", "3608"]
+  #     interval: 10s
+  #     retries: 5
+  #     start_period: 5s
+  #   command: -p 3608
+  #   restart: always
 
   redis:
     image: redis:latest
@@ -113,6 +114,7 @@ services:
       timeout: 30s
       retries: 50
       start_period: 30s
+    command: --port 3608
     restart: always
 
   airflow-webserver:
@@ -317,7 +319,7 @@ services:
     environment:
       MINIO_ROOT_USER: "admin"
       MINIO_ROOT_PASSWORD: "password"
-    command: server --console-address ":3602" /data
+    command: server --console-address ":3602" --address ":3601" /data
 
   mlflow:
     restart: always
@@ -331,7 +333,7 @@ services:
       MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    command: mlflow server --default-artifact-root s3://modelbucket/ --backend-store-uri /workdir --host 0.0.0.0
+    command: mlflow server --default-artifact-root s3://modelbucket/ --backend-store-uri /workdir --host 0.0.0.0 --port 3603
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:3603/health"]
       interval: 30s
