@@ -99,7 +99,7 @@ t1 = PythonOperator(
 
 t2 = BashOperator(
     task_id="bentoml_serve",
-    bash_command="bentoml serve service:svc",
+    bash_command="bentoml serve service:svc -p 3605",
     cwd="/workdir",
     dag=main_dag
 )

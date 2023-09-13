@@ -53,11 +53,11 @@ x-airflow-common: &airflow-common
   build: .
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:3608/airflow
     # For backward compatibility, with Airflow <2.3
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:3608/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres:3608/airflow
+    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:3607/0
     AIRFLOW__CORE__FERNET_KEY: ""
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
@@ -97,7 +97,7 @@ services:
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-U", "airflow", "--port", "3608"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -106,9 +106,9 @@ services:
   redis:
     image: redis:latest
     expose:
-      - 6379
+      - 3607
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "ping", "--port", "3607"]
       interval: 10s
       timeout: 30s
       retries: 50
@@ -117,11 +117,11 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
-    command: webserver
+    command: webserver --port 3606
     ports:
-      - "8080:8080"
+      - "3606:3606"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "--fail", "http://localhost:3606/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -151,7 +151,7 @@ services:
     <<: *airflow-common
     command: celery worker
     ports:
-      - "3000:3000"
+      - "3605:3605"
     healthcheck:
       # yamllint disable rule:line-length
       test:
@@ -287,13 +287,13 @@ services:
   # See: https://docs.docker.com/compose/profiles/
   flower:
     <<: *airflow-common
-    command: celery flower
+    command: celery flower --port 3604
     profiles:
       - flower
     ports:
-      - "5555:5555"
+      - "3604:3604"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
+      test: ["CMD", "curl", "--fail", "http://localhost:3604/"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -310,14 +310,14 @@ services:
     mem_limit: 1G
     image: minio/minio:latest
     ports:
-      - "9000:9000"
-      - "9100:9100"
+      - "3601:3601"
+      - "3602:3602"
     volumes:
       - ./minio_storage:/data
     environment:
       MINIO_ROOT_USER: "admin"
       MINIO_ROOT_PASSWORD: "password"
-    command: server --console-address ":9100" /data
+    command: server --console-address ":3602" /data
 
   mlflow:
     restart: always
@@ -325,7 +325,7 @@ services:
       context: .
       dockerfile: Dockerfile-mlflow
     ports:
-      - "5000:5000"
+      - "3603:3603"
     environment:
       MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
       MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
@@ -333,7 +333,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     command: mlflow server --default-artifact-root s3://modelbucket/ --backend-store-uri /workdir --host 0.0.0.0
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5000/health"]
+      test: ["CMD", "curl", "--fail", "http://localhost:3603/health"]
       interval: 30s
       timeout: 10s
       retries: 5
