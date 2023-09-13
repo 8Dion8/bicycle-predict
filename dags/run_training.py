@@ -12,7 +12,7 @@ import numpy as np
 MLFLOW_CONN_ID = "mlflow_default"
 
 
-def train_time_series_with_folds(model, df, horizon=24*7):
+def train_time_series_with_folds(model, df, lag, horizon=24*7):
 
     # Load and create if necessary MLflow experiment
     try:
@@ -36,6 +36,7 @@ def train_time_series_with_folds(model, df, horizon=24*7):
         # calculate MAE
         mae = np.round(mean_absolute_error(y_test, predictions), 3)
         mlflow.log_metric("mae", mae)
+        mlflow.log_param("data lag", lag)
 
         logged_model = mlflow.sklearn.log_model(
             model,
@@ -66,9 +67,11 @@ def train():
     # drop casual and registered columns
     df.drop(['casual', 'registered'], axis=1, inplace=True)
 
+    mlflow.lightgbm.autolog()
+
     # Initial train
     model = LGBMRegressor()
-    train_time_series_with_folds(model, df)
+    train_time_series_with_folds(model, df, 0)
 
     # create 1 week lag variable by shifting the target value for 1 week
     df['count_prev_week_same_hour'] = df['count'].shift(24*7)
@@ -78,7 +81,17 @@ def train():
 
     # Train with 1 week lag
     model = LGBMRegressor()
-    train_time_series_with_folds(model, df)
+    train_time_series_with_folds(model, df, 7)
+
+    # create 2 week lag variable by shifting the target value for another week
+    df['count_prev_week_same_hour'] = df['count'].shift(24*7)
+
+    # drop NaNs after feature engineering
+    df.dropna(how='any', axis=0, inplace=True)
+
+    # Train with 2 week lag
+    model = LGBMRegressor()
+    train_time_series_with_folds(model, df, 14)
 
 
 main_dag = DAG(
