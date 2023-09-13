@@ -317,6 +317,7 @@ services:
     restart: "no"
     container_name: minio-init
     image: minio/minio:latest
+    entrypoint: ""
     command: bash -c "docker exec -it minio sh -c "mc alias s local http://minio:3601 admin password && mc mb local/modelbucket""
 
   mlflow:
