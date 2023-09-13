@@ -302,7 +302,9 @@ services:
     restart: always
     container_name: minio
     mem_limit: 1G
-    image: minio/minio:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-minio
     ports:
       - "3601:3601"
       - "3602:3602"
