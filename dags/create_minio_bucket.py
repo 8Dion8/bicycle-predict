@@ -11,13 +11,13 @@ create_dag = DAG(
 
 t1 = BashOperator(
     task_id="set_alias",
-    bash_command="mc alias s local http://minio:3601",
+    bash_command="",
     dag=create_dag
 )
 
 t2 = BashOperator(
     task_id="create_bucket",
-    bash_command="mc mb local/modelbucket admin password",
+    bash_command="mc mb local/modelbucket",
     dag=create_dag
 )
 
