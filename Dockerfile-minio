@@ -1,6 +1,0 @@
-FROM minio/minio:latest
-
-USER root
-
-RUN mc alias s local http://localhost:3601
-RUN mc mb local/modelbucket

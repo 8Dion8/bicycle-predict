@@ -302,9 +302,7 @@ services:
     restart: always
     container_name: minio
     mem_limit: 1G
-    build:
-      context: .
-      dockerfile: Dockerfile-minio
+    image: minio/minio:latest
     ports:
       - "3601:3601"
       - "3602:3602"
@@ -313,7 +311,7 @@ services:
     environment:
       MINIO_ROOT_USER: "admin"
       MINIO_ROOT_PASSWORD: "password"
-    command: server --console-address ":3602" --address ":3601" /data
+    command: server --console-address ":3602" --address ":3601" /data && mc alias s local http://localhost:3601 && mc mb local/modelbucket
 
   mlflow:
     restart: always
