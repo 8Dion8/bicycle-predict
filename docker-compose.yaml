@@ -81,11 +81,6 @@ x-airflow-common: &airflow-common
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
-  depends_on: &airflow-common-depends-on
-    redis:
-      condition: service_healthy
-    postgres:
-      condition: service_healthy
 
 services:
   postgres:
@@ -96,11 +91,11 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow", "--port", "3608"]
-      interval: 10s
-      retries: 5
-      start_period: 5s
+    # healthcheck:
+    #   test: ["CMD", "pg_isready", "-U", "airflow"]
+    #   interval: 10s
+    #   retries: 5
+      # start_period: 5s
     command: -p 3608
     restart: always
 
@@ -108,13 +103,13 @@ services:
     image: redis:latest
     expose:
       - 3607
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping", "--port", "3607"]
-      interval: 10s
-      timeout: 30s
-      retries: 50
-      start_period: 30s
-    command: --port 3608
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "ping"]
+    #   interval: 10s
+    #   timeout: 30s
+    #   retries: 50
+    #   start_period: 30s
+    command: --port 3607
     restart: always
 
   airflow-webserver:
@@ -130,7 +125,6 @@ services:
       start_period: 30s
     restart: always
     depends_on:
-      <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
 
@@ -145,7 +139,6 @@ services:
       start_period: 30s
     restart: always
     depends_on:
-      <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
 
@@ -170,7 +163,6 @@ services:
       DUMB_INIT_SETSID: "0"
     restart: always
     depends_on:
-      <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
 
@@ -189,7 +181,6 @@ services:
       start_period: 30s
     restart: always
     depends_on:
-      <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
 
@@ -302,7 +293,6 @@ services:
       start_period: 30s
     restart: always
     depends_on:
-      <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
 
