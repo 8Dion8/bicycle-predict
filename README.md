@@ -17,3 +17,6 @@ $ docker compose down && docker compose build && docker compose up
 * `http://localhost:5000/` - MLflow
 
 После запуска `main.dag` в Airflow будет доступен еще `http://localhost:3000/` на котором можно протестировать модель в BentoML
+
+
+
