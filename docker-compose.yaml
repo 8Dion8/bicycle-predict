@@ -84,25 +84,25 @@ x-airflow-common: &airflow-common
   depends_on: &airflow-common-depends-on
     redis:
       condition: service_healthy
-    # postgres:
-    #   condition: service_healthy
+    postgres:
+      condition: service_healthy
 
 services:
-  # postgres:
-  #   image: postgres:13
-  #   environment:
-  #     POSTGRES_USER: airflow
-  #     POSTGRES_PASSWORD: airflow
-  #     POSTGRES_DB: airflow
-  #   volumes:
-  #     - postgres-db-volume:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD", "pg_isready", "-U", "airflow", "--port", "3608"]
-  #     interval: 10s
-  #     retries: 5
-  #     start_period: 5s
-  #   command: -p 3608
-  #   restart: always
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow", "--port", "3608"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    command: -p 3608
+    restart: always
 
   redis:
     image: redis:latest
