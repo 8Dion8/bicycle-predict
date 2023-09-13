@@ -311,7 +311,7 @@ services:
     environment:
       MINIO_ROOT_USER: "admin"
       MINIO_ROOT_PASSWORD: "password"
-    command: server --console-address ":3602" --address ":3601" /data && mc alias s local http://localhost:3601 && mc mb local/modelbucket
+    command: server --console-address ":3602" --address ":3601" /data
 
   mlflow:
     restart: always
